@@ -278,7 +278,6 @@ ssize_t Server::handle_mjpeg(void *cls, uint64_t pos, char *buf, size_t max){
 }
 
 void Server::free_mjpeg(void *cls) {
-    printf("xxxx\n");
     Server *s = static_cast<Server *>(cls);
     s->_live_stream->str("");
     s->_live_stream->clear();
