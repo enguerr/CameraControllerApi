@@ -189,8 +189,8 @@ int CameraController::capture(const char *filename, string &data){
 }
 
 int CameraController::preview(const char **file_data){
-	if(this->_camera_found == false)
-		return GP_ERROR;
+    if(this->_camera_found == false)
+        return GP_ERROR;
 
     this->_is_busy = true;
     int ret;
@@ -201,7 +201,7 @@ int CameraController::preview(const char **file_data){
         return ret;
     }
 
-	ret = gp_camera_capture_preview(this->_camera, file, this->_ctx);
+    ret = gp_camera_capture_preview(this->_camera, file, this->_ctx);
 
     if(ret != GP_OK){
         this->_is_busy = false;
@@ -353,7 +353,7 @@ int CameraController::_get_files(ptree &tree, const char *path){
                 strcpy(cPath.folder, path);
                 strcpy(cPath.name, name);
 
-                printf("start read file %s", name);
+                printf("start read file %s\n", name);
 
                 CameraFile *file;
                 ret = gp_file_new(&file);

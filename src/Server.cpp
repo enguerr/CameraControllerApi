@@ -141,7 +141,7 @@ int Server::url_handler (void *cls,
                         const char *method,
                         const char *version,
                         const char *upload_data, size_t *upload_data_size, void **ptr){
-    printf("connection received %s", method);
+    printf("connection received %s\n", method);
     int ret;
     map<string, string> url_args;
     string respdata;
@@ -185,8 +185,8 @@ int Server::url_handler (void *cls,
 
     if( urlString.find("webif") != std::string::npos && s._webif){
     	response = handle_webif(cls, connection, url);
-    } else if(urlString.find("liveview") != std::string::npos) { 
-      response = MHD_create_response_from_callback (MHD_SIZE_UNKNOWN,
+    } else if(urlString.find("liveview") != std::string::npos) {
+        response = MHD_create_response_from_callback (MHD_SIZE_UNKNOWN,
                                                       512 * 1024,
                                                       Server::handle_mjpeg, cls, Server::free_mjpeg);
         MHD_add_response_header(response, "Content-Type", "multipart/x-mixed-replace;boundary=CCA_LV_FRAME");
@@ -250,7 +250,8 @@ MHD_Response* Server::handle_webif(void *cls,
 
 ssize_t Server::handle_mjpeg(void *cls, uint64_t pos, char *buf, size_t max){
     Server *s = static_cast<Server*>(cls);
-    s->_live_stream->seekg(pos);
+//    s->_live_stream->seekg(pos);
+    s->_live_stream->seekg(0);
     
     std::streamsize available = s->_live_stream->rdbuf()->in_avail();
 
@@ -266,12 +267,18 @@ ssize_t Server::handle_mjpeg(void *cls, uint64_t pos, char *buf, size_t max){
         delete data;
     }
     
-
     s->_live_stream->read(buf, max);
+
+    int g = s->_live_stream->tellg();
+    std::string st = s->_live_stream->str();
+    st.erase(0, g);
+    s->_live_stream->str(st);
+    
     return max;
 }
 
 void Server::free_mjpeg(void *cls) {
+    printf("xxxx\n");
     Server *s = static_cast<Server *>(cls);
     s->_live_stream->str("");
     s->_live_stream->clear();
